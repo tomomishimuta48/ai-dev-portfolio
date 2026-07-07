@@ -1,0 +1,87 @@
+design_system:
+  name: "Quiet Ledger"
+  mood:
+    - restrained
+    - editorial
+    - warm-neutral
+    - precise
+    - unhurried
+  one_line: >
+    A quiet, journal-like calm with one warm and one cool accent held
+    in careful tension — never loud, never sterile, never decorative
+    for its own sake.
+
+  color:
+    philosophy: >
+      Warm-biased neutrals instead of pure black/white or cold gray.
+      Exactly one warm accent and one cool accent, used as a meaningful
+      pair rather than as decoration — color should always encode a real
+      distinction in the content (a state, a category, a before/after).
+      Soft muted tints of each accent cover low-emphasis states
+      (badges, chips, subtle backgrounds) instead of opacity tricks.
+    light:
+      canvas: "#f6f3ec"
+      surface: "#ffffff"
+      surface_alt: "#efece3"
+      hairline: "#e0dbcc"
+      text_primary: "#221f1a"
+      text_muted: "#75705f"
+      accent_warm: "#c4552a"
+      accent_warm_soft: "#f1ded0"
+      accent_cool: "#2d7566"
+      accent_cool_soft: "#dbe9e2"
+    dark:
+      canvas: "#14161b"
+      surface: "#1b1e24"
+      surface_alt: "#20232a"
+      hairline: "#2c2f37"
+      text_primary: "#eae7de"
+      text_muted: "#94917f"
+      accent_warm: "#e2703c"
+      accent_warm_soft: "#3a2a20"
+      accent_cool: "#6fb6a3"
+      accent_cool_soft: "#1f322c"
+    rules:
+      - "Never pure #000 or #fff — always a warm-tinted near-black / near-white."
+      - "One warm + one cool accent only; no third competing hue."
+      - "The accent pair should map to a real binary in the content, not be applied decoratively."
+
+  typography:
+    philosophy: >
+      Three roles, each doing exactly one job. An editorial serif carries
+      headline character and is used sparingly. A plain humanist sans
+      carries all reading text. A monospace carries anything numeric or
+      systematic. Never let the serif run into body copy, never let the
+      mono carry prose.
+    display:
+      role: "headline character — used once or twice per view, not repeated"
+      style: "serif, moderate weight, generous size, balanced line-wrap"
+    body:
+      role: "reading text"
+      style: "plain sans, line-height ~1.6–1.8, comfortable measure (~60–65 characters)"
+    utility:
+      role: "numbers, counters, tags, timestamps, small labels"
+      style: "monospace, tabular figures, slight letter-spacing on all-caps labels"
+
+  shape_and_surface:
+    radius: "small only, 4–8px — never pill-shaped, never sharp 0px"
+    elevation: "flat; hairline 1px borders instead of shadows"
+    borders: "1px hairline as the primary structural device between regions"
+    imagery_treatment: >
+      When displaying artifacts (screenshots, photos, embeds), frame them
+      with a light nod to their native medium rather than a bare rounded
+      crop — a small, honest texture detail, not decoration.
+
+  motion:
+    philosophy: >
+      Near-absent. Respect prefers-reduced-motion. State changes are
+      instant or a quick fade — never animation used to add energy the
+      content doesn't have.
+
+  anti_patterns:
+    - "Purple-to-blue gradient hero"
+    - "Warm cream + terracotta + serif used as a reflexive default"
+    - "Rounded-lg / pill shapes on every surface"
+    - "Pure black background with a single neon accent"
+    - "Emoji used as decorative section markers"
+    - "Cold, hueless gray neutrals"

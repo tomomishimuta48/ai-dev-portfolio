@@ -3,508 +3,329 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI開発ログ | tomomi.log</title>
-<meta name="description" content="Claude Codeを使ったAI開発の学習ログ。ファイル生成からサブエージェント・カスタムスキル・ブラウザ操作まで、初級から中級への実績記録。">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#f3f0ea;
-    --ink:#141312;
-    --sub:#8c8781;
-    --line:#dcd7cd;
-    --tracking-label:0.14em;
-    --tracking-wide:0.34em;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    font-family:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN",-apple-system,BlinkMacSystemFont,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.9;
-    font-weight:300;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:inherit;}
-  img{filter:grayscale(0.1) contrast(1.02);}
-
-  .serif{font-family:"Shippori Mincho",serif;}
-  .num{font-family:"Cormorant Garamond",serif;}
-
-  /* Header */
-  header{
-    position:sticky; top:0; z-index:50;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:26px 48px;
-    background:rgba(243,240,234,0.88);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);
-  }
-  .logo{font-family:"Shippori Mincho",serif; font-weight:700; font-size:15px; letter-spacing:var(--tracking-label);}
-  nav a{
-    position:relative;
-    margin-left:40px; font-size:11px; color:var(--sub); text-decoration:none;
-    letter-spacing:var(--tracking-label); text-transform:uppercase;
-    padding-bottom:4px;
-  }
-  nav a::after{
-    content:""; position:absolute; left:0; right:100%; bottom:0; height:1px; background:var(--ink);
-    transition:right .25s ease;
-  }
-  nav a:hover{color:var(--ink);}
-  nav a:hover::after{right:0;}
-
-  /* Hero */
-  .hero{
-    max-width:1280px; margin:0 auto;
-    padding:110px 48px 130px;
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:80px; align-items:end;
-  }
-  .hero-copy .eyebrow{
-    font-size:11px; letter-spacing:var(--tracking-wide); color:var(--sub);
-    text-transform:uppercase; font-weight:500; margin-bottom:34px;
-  }
-  .hero-copy h1{
-    font-family:"Shippori Mincho",serif;
-    font-size:clamp(34px,4.4vw,58px); font-weight:700; margin:0 0 34px;
-    letter-spacing:0.02em; line-height:1.4;
-  }
-  .hero-copy p{
-    color:var(--sub); font-size:14px; max-width:440px; font-weight:300; margin:0;
-  }
-  .stats{
-    display:flex; gap:0; margin-top:64px; border-top:1px solid var(--line);
-  }
-  .stat{
-    flex:1; padding:22px 0 0; border-right:1px solid var(--line);
-  }
-  .stat:last-child{border-right:none;}
-  .stat b{display:block; font-family:"Cormorant Garamond",serif; font-size:38px; font-weight:500; line-height:1;}
-  .stat span{display:block; margin-top:10px; font-size:10px; color:var(--sub); letter-spacing:var(--tracking-label); text-transform:uppercase;}
-
-  .hero-figure{position:relative;}
-  .hero-figure .frame{
-    aspect-ratio:4/5; overflow:hidden; background:#e7e3da;
-  }
-  .hero-figure img{width:100%; height:100%; object-fit:cover; object-position:top;}
-  .hero-figure .cap{
-    margin-top:16px; display:flex; justify-content:space-between;
-    font-size:10px; color:var(--sub); letter-spacing:var(--tracking-label); text-transform:uppercase;
-  }
-
-  /* Skills strip */
-  .skills-strip{
-    max-width:1280px; margin:0 auto; padding:0 48px 100px;
-    display:flex; flex-wrap:wrap; align-items:baseline; gap:14px 0;
-    border-top:1px solid var(--line); padding-top:34px;
-  }
-  .skills-strip .label{
-    font-size:10px; color:var(--sub); letter-spacing:var(--tracking-wide); text-transform:uppercase; margin-right:36px;
-  }
-  .skill-item{
-    font-size:12px; padding:0 20px; border-left:1px solid var(--line);
-    letter-spacing:var(--tracking-label); text-transform:uppercase; color:var(--ink);
-  }
-  .skill-item:first-of-type{border-left:none; padding-left:0;}
-
-  /* Section heading */
-  .section-head{
-    max-width:1280px; margin:0 auto; padding:0 48px; display:flex;
-    align-items:baseline; justify-content:space-between; margin-bottom:56px;
-  }
-  .section-head .eyebrow{
-    font-size:11px; letter-spacing:var(--tracking-wide); color:var(--sub); text-transform:uppercase;
-  }
-  .section-head h2{
-    font-family:"Shippori Mincho",serif; font-size:30px; font-weight:700; margin:14px 0 0;
-    letter-spacing:0.04em;
-  }
-  .section-head .count{font-family:"Cormorant Garamond",serif; font-size:16px; color:var(--sub);}
-
-  /* Filter */
-  .filter-bar{
-    display:flex; gap:0; max-width:1280px; margin:0 auto; padding:0 48px 64px;
-  }
-  .filter-btn{
-    font-size:11px; padding:12px 30px; border:1px solid var(--ink); background:transparent; cursor:pointer;
-    color:var(--ink); font-weight:500; letter-spacing:var(--tracking-label);
-    text-transform:uppercase; margin-left:-1px;
-    transition:background .18s ease, color .18s ease;
-  }
-  .filter-btn.active{background:var(--ink); color:var(--bg);}
-  .filter-btn:not(.active):hover{background:var(--ink); color:var(--bg);}
-
-  /* Gallery grid */
-  .gallery{
-    max-width:1280px; margin:0 auto; padding:0 48px 140px;
-    display:grid; grid-template-columns:repeat(3,1fr); gap:56px 40px;
-  }
-  .card{
-    background:transparent; cursor:pointer; display:flex; flex-direction:column;
-  }
-  .thumb-wrap{position:relative; aspect-ratio:4/3; overflow:hidden; background:#e7e3da;}
-  .thumb-wrap img{width:100%; height:100%; object-fit:cover; object-position:top; transition:transform .5s ease, filter .3s ease;}
-  .card:hover .thumb-wrap img{transform:scale(1.03); filter:grayscale(0.1) contrast(1.02) brightness(0.94);}
-  .level-badge{
-    position:absolute; top:0; left:0; background:var(--ink);
-    color:var(--bg); font-size:10px; padding:8px 14px;
-    letter-spacing:var(--tracking-label); text-transform:uppercase;
-  }
-  .multi-badge{
-    position:absolute; top:0; right:0; background:rgba(20,18,16,0.72);
-    color:#fff; font-size:10px; padding:8px 14px;
-    letter-spacing:0.08em;
-  }
-  .card-no{
-    position:absolute; bottom:0; right:0; color:#fff; font-family:"Cormorant Garamond",serif;
-    font-size:34px; padding:4px 14px; line-height:1;
-    text-shadow:0 1px 10px rgba(0,0,0,0.55);
-  }
-  .card-body{padding:22px 0 0; border-top:1px solid var(--line);}
-  .card h3{
-    font-family:"Shippori Mincho",serif; font-size:16px; margin:0 0 12px; font-weight:700;
-    position:relative; display:inline-block;
-  }
-  .card h3::after{
-    content:""; position:absolute; left:0; right:100%; bottom:-3px; height:1px; background:var(--ink);
-    transition:right .3s ease;
-  }
-  .card:hover h3::after{right:0;}
-  .card p{font-size:12px; color:var(--sub); margin:0 0 16px; font-weight:300;}
-  .tag-row{font-size:10px; color:var(--sub); letter-spacing:var(--tracking-label); text-transform:uppercase;}
-
-  /* Feature spanning card every 4th item */
-  .card.feature{grid-column:span 2;}
-  .card.feature .thumb-wrap{aspect-ratio:16/8;}
-
-  /* About */
-  .about{
-    max-width:1280px; margin:0 auto; padding:120px 48px 130px;
-    display:grid; grid-template-columns:0.8fr 1.2fr; gap:80px;
-    border-top:1px solid var(--line);
-  }
-  .about .eyebrow{
-    font-size:11px; letter-spacing:var(--tracking-wide); color:var(--sub); text-transform:uppercase; margin-bottom:20px;
-  }
-  .about h2{font-family:"Shippori Mincho",serif; font-size:32px; margin:0; font-weight:700; letter-spacing:0.03em; line-height:1.5;}
-  .about-body p{color:var(--sub); font-size:14px; font-weight:300; margin:0 0 24px; max-width:560px;}
-  .about-body p:last-child{margin-bottom:0;}
-
-  footer{
-    border-top:1px solid var(--line); padding:40px 48px;
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:11px; color:var(--sub); letter-spacing:var(--tracking-label); text-transform:uppercase;
-  }
-  footer a{text-decoration:none;}
-  footer a:hover{color:var(--ink);}
-
-  /* Lightbox */
-  .lightbox{
-    position:fixed; inset:0; background:rgba(8,7,6,0.97); z-index:100;
-    display:none; align-items:center; justify-content:center; padding:60px;
-  }
-  .lightbox.open{display:flex;}
-  .lightbox-inner{display:flex; flex-direction:column; align-items:center; max-width:1100px; width:100%;}
-  .lightbox img{max-width:100%; max-height:72vh; object-fit:contain;}
-  .lightbox-close{
-    position:absolute; top:32px; right:44px; color:#fff; font-size:13px;
-    cursor:pointer; background:none; border:none; letter-spacing:var(--tracking-label); text-transform:uppercase;
-  }
-  .lightbox-cap{color:#e9e6e0; font-size:12px; margin-top:24px; text-align:center; letter-spacing:var(--tracking-label);}
-  .lightbox-cap .no{color:#8c8781; margin-right:10px;}
-  .lightbox-nav{
-    background:transparent; border:none; color:#e9e6e0; letter-spacing:var(--tracking-label);
-    font-size:11px; cursor:pointer; text-transform:uppercase; padding:8px 0;
-    border-bottom:1px solid transparent;
-  }
-  .lightbox-nav:hover{border-bottom-color:#e9e6e0;}
-  .lightbox-controls{display:flex; gap:40px; margin-top:22px;}
-  .lightbox-controls .hide{visibility:hidden;}
-
-  @media(max-width:980px){
-    .hero{grid-template-columns:1fr; gap:56px; padding:90px 32px 90px;}
-    .hero-figure{order:-1;}
-    .gallery{grid-template-columns:repeat(2,1fr); padding:0 32px 100px;}
-    .card.feature{grid-column:span 2;}
-    .about{grid-template-columns:1fr; padding:90px 32px 100px; gap:32px;}
-    .section-head, .filter-bar, .skills-strip{padding-left:32px; padding-right:32px;}
-  }
-  @media(max-width:640px){
-    header{padding:18px 22px;}
-    nav a{margin-left:22px;}
-    .hero{padding:70px 22px 70px;}
-    .stats{flex-wrap:wrap;}
-    .stat{flex:1 1 50%; border-right:none; margin-bottom:20px;}
-    .gallery{grid-template-columns:1fr; padding:0 22px 80px; gap:48px;}
-    .card.feature{grid-column:span 1;}
-    .card.feature .thumb-wrap{aspect-ratio:4/3;}
-    .section-head, .filter-bar, .skills-strip{padding-left:22px; padding-right:22px;}
-    .about{padding:70px 22px 80px;}
-    footer{flex-direction:column; gap:12px; text-align:center; padding:32px 22px;}
-  }
-</style>
+<title>AI開発 学習ポートフォリオ</title>
+<meta name="description" content="Claude Codeを使ったAI開発の学習ログ。README生成からSubAgent・Skill自作・ブラウザ自動操作・GitHub公開まで、初級から中級への実績記録。">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <div class="logo">tomomi<span>.</span>log</div>
-  <nav>
-    <a href="#works">Works</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
+<div class="wrap">
 
-<section class="hero">
-  <div class="hero-copy">
-    <div class="eyebrow">Claude Code Learning Portfolio</div>
-    <h1>AI開発を、<br>積み上げる。</h1>
-    <p>Claude Codeを使ったAI開発の学習ログです。ファイル生成からサブエージェント・カスタムスキル・ブラウザ操作まで、初級から中級へ一つずつ実績を積み重ねています。</p>
-    <div class="stats">
-      <div class="stat"><b class="num">13</b><span>実績数</span></div>
-      <div class="stat"><b class="num">07</b><span>初級</span></div>
-      <div class="stat"><b class="num">06</b><span>中級</span></div>
+  <header class="masthead">
+    <div class="kicker">Learning Log · Claude Code</div>
+    <h1>AI開発 学習ポートフォリオ</h1>
+    <p class="lede">Claude Codeを使ったAI開発の練習記録。README生成からSubAgent・Skill自作・ブラウザ自動操作・GitHub公開まで、初級から中級へ段階的に取り組んだ過程を残しています。</p>
+    <div class="statrow">
+      <div class="stat"><b class="mono">17</b><span>制作物</span></div>
+      <div class="stat"><b class="mono">08</b><span>初級</span></div>
+      <div class="stat"><b class="mono">09</b><span>中級</span></div>
+    </div>
+  </header>
+
+  <section class="progress">
+    <div class="progress-head">
+      <h2>Progress</h2>
+      <span class="mono">00 → 07</span>
+    </div>
+    <div class="track"><i class="b"></i><i class="m"></i></div>
+    <div class="taglist" id="tagFilter">
+      <button class="active" data-tag="all">すべてのタグ</button>
+      <button data-tag="readme">README生成</button>
+      <button data-tag="env">環境理解</button>
+      <button data-tag="subagent">SubAgent</button>
+      <button data-tag="skill">Skill</button>
+      <button data-tag="workflow">ワークフロー設計</button>
+      <button data-tag="content">コンテンツ生成</button>
+      <button data-tag="browser">ブラウザ操作</button>
+      <button data-tag="integration">外部連携</button>
+      <button data-tag="github">GitHub</button>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Timeline</h2>
+    <div class="toggle" id="levelFilter">
+      <button class="active" data-f="all">すべて</button>
+      <button data-f="beg">初級</button>
+      <button data-f="mid">中級</button>
     </div>
   </div>
-  <div class="hero-figure">
-    <div class="frame"><img src="images/06%E4%B8%AD%E7%B4%9A%E2%91%A1.png" alt="Claude in Chromeでのブラウザ自動操作の様子"></div>
-    <div class="cap"><span>Featured — Set 06</span><span>Browser Automation</span></div>
-  </div>
-</section>
+  <div class="result-count" id="resultCount"></div>
 
-<div class="skills-strip">
-  <span class="label">Skill Set</span>
-  <span class="skill-item">サブエージェント</span>
-  <span class="skill-item">カスタムスキル</span>
-  <span class="skill-item">スラッシュコマンド</span>
-  <span class="skill-item">Claude in Chrome</span>
-  <span class="skill-item">GitHub連携</span>
+  <section class="timeline" id="timeline">
+
+    <article class="entry" data-level="beg" data-tags="readme">
+      <div class="node mono">00</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/00.jpg" alt="自己紹介READMEの自動生成"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">README生成</span></div>
+          <h3>自己紹介READMEの自動生成</h3>
+          <p class="caption"><b>やったこと：</b>架空人物の自己紹介READMEを指示だけで作成。<b>工夫点：</b>項目数(名前・好きなもの3つ・学びたいこと)と構成を指定。<b>わかったこと：</b>指示の粒度がそのまま出力の質になる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="env">
+      <div class="node mono">01</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/01-a.jpg" alt="利用状況ダッシュボードの確認"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">環境理解</span></div>
+          <h3>利用状況ダッシュボードの確認</h3>
+          <p class="caption"><b>やったこと：</b>セッション数・メッセージ数・トークン量・継続日数を可視化。<b>工夫点：</b>日々の利用ペースを数値で把握。<b>わかったこと：</b>継続日数が学習の指標になる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="env">
+      <div class="node mono">01</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/01-b.jpg" alt="Claudeのカスタマイズ画面の把握"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">環境理解</span></div>
+          <h3>Claudeのカスタマイズ画面の把握</h3>
+          <p class="caption"><b>やったこと：</b>スキル・コネクタ・プラグインを管理する設定画面を確認。<b>工夫点：</b>アプリ接続/スキル作成/プラグイン参照の3導線を整理。<b>わかったこと：</b>Claudeの拡張性はこの3つの仕組みに集約される。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="subagent">
+      <div class="node mono">02</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/02-beg.jpg" alt="code-reviewer SubAgentによるコードレビュー"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">SubAgent</span></div>
+          <h3>code-reviewer SubAgentによるコードレビュー</h3>
+          <p class="caption"><b>やったこと：</b>サンプルコードを作成しcode-reviewer SubAgentでレビュー。<b>工夫点：</b>指摘を重要度高・中程度で分類させた。<b>わかったこと：</b>KeyErrorやリソースリークなど実務レベルの指摘が得られた。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="subagent">
+      <div class="node mono">02</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/02-mid.jpg" alt="セキュリティ重視のレビューへ改善"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">SubAgent</span></div>
+          <h3>セキュリティ重視のレビューへ改善</h3>
+          <p class="caption"><b>やったこと：</b>code-reviewer.mdを編集しセキュリティを最優先観点に変更。<b>工夫点：</b>OWASP Top10を意識したチェック項目を明記。<b>わかったこと：</b>エージェント定義文を書き換えるだけでレビュー観点を制御できる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="skill">
+      <div class="node mono">03</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/03-beg.jpg" alt="文字数カウントSkillを実データで利用"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">Skill</span></div>
+          <h3>文字数カウントSkillを実データで利用</h3>
+          <p class="caption"><b>やったこと：</b>char-countスキルで実際の契約書(.docx)の文字数を計測。<b>工夫点：</b>改行/スペース有無で4パターンの文字数を算出。<b>わかったこと：</b>Wordファイルは本文抽出処理を挟む必要がある。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="skill">
+      <div class="node mono">03</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/03-mid.jpg" alt="char-count Skillの発動精度を改善"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">Skill</span></div>
+          <h3>char-count Skillの発動精度を改善</h3>
+          <p class="caption"><b>やったこと：</b>descriptionと手順を詳細化しSKILL.mdを更新。<b>工夫点：</b>発動条件を具体的な利用シーンで明記し、echo経由の落とし穴にも対処。<b>わかったこと：</b>Skillは「いつ発動するか」の記述が精度を左右する。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="skill">
+      <div class="node mono">04</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/04-mid-a.jpg" alt="reader-persona / heading-analyzer Skillの自作"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">Skill</span></div>
+          <h3>reader-persona / heading-analyzer Skillの自作</h3>
+          <p class="caption"><b>やったこと：</b>読者ペルソナ具体化スキルと見出し構成分析スキルを新規作成。<b>工夫点：</b>2つのスキルを相互参照させ既存の執筆フローに組み込める設計に。<b>わかったこと：</b>Skill同士を連携させると一連のワークフローになる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="skill content">
+      <div class="node mono">04</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/04-mid-b.jpg" alt="自作Skillを使った5000字記事の執筆"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">コンテンツ生成</span></div>
+          <h3>自作Skillを使った5000字記事の執筆</h3>
+          <p class="caption"><b>やったこと：</b>reader-persona/heading-analyzer/char-countを組み合わせ記事を生成。<b>工夫点：</b>文字数を3回の圧縮調整で目標の±5%以内に収束。<b>わかったこと：</b>Skillの合成で執筆品質と分量が安定する。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="skill">
+      <div class="node mono">05</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/05-beg.jpg" alt="file-summary Skillでドキュメントを要約"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">Skill</span></div>
+          <h3>file-summary Skillでドキュメントを要約</h3>
+          <p class="caption"><b>やったこと：</b>解説記事のmdファイルをfile-summaryスキルでタイトル・トピック3つ・結論に要約。<b>工夫点：</b>既存のfile-summaryスキルをそのまま活用。<b>わかったこと：</b>長文でも要点3つに絞れば全体像を素早く掴める。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="skill workflow">
+      <div class="node mono">05</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/05-mid-a.jpg" alt="file-summaryを3段階ワークフローに設計"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">ワークフロー設計</span></div>
+          <h3>file-summaryを3段階ワークフローに設計</h3>
+          <p class="caption"><b>やったこと：</b>読み込み→要約→改善提案の3ステップにSkillを再設計。<b>工夫点：</b>claude-code-guideエージェントに相談しベストプラクティスを確認。<b>わかったこと：</b>既存Skillも段階を足すだけでワークフロー化できる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="skill workflow">
+      <div class="node mono">05</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/05-mid-b.jpg" alt="3段階版Skillの動作を実データで検証"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">ワークフロー設計</span></div>
+          <h3>3段階版Skillの動作を実データで検証</h3>
+          <p class="caption"><b>やったこと：</b>更新したfile-summaryを同じ資料に再実行し改善提案付きの出力を確認。<b>工夫点：</b>Before/Afterを同一ファイルで比較。<b>わかったこと：</b>改善提案が加わり単なる要約から一歩踏み込んだ出力になった。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="browser">
+      <div class="node mono">06</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/06-beg.jpg" alt="Chrome拡張でニュース見出しを取得"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">ブラウザ操作</span></div>
+          <h3>Chrome拡張でニュース見出しを取得</h3>
+          <p class="caption"><b>やったこと：</b>Claude in ChromeでYahoo!ニュースのトップ見出し10個を取得。<b>工夫点：</b>ページ内容の読み取りのみに範囲を限定。<b>わかったこと：</b>ブラウザの表示内容をそのままテキストとして扱える。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="browser">
+      <div class="node mono">06</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/06-mid-a.jpg" alt="ブラウザ操作によるログイン自動化"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">ブラウザ操作</span></div>
+          <h3>ブラウザ操作によるログイン自動化</h3>
+          <p class="caption"><b>やったこと：</b>テスト用サイトのログインフォームにユーザー名/パスワードを入力し認証を自動化。<b>工夫点：</b>6ステップの操作を1指示で完結させた。<b>わかったこと：</b>フォーム入力から遷移確認までブラウザ操作を任せられる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="browser integration">
+      <div class="node mono">06</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/06-mid-b.jpg" alt="取得した見出しをスプレッドシートへ転記"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">外部連携</span></div>
+          <h3>取得した見出しをスプレッドシートへ転記</h3>
+          <p class="caption"><b>やったこと：</b>取得済みのニュース見出し10件をGoogleスプレッドシートのA1〜A10に自動入力。<b>工夫点：</b>ブラウザで読み取った内容を別サービスへそのまま連携。<b>わかったこと：</b>ブラウザ横断の自動化で単純作業を代替できる。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="beg" data-tags="github">
+      <div class="node mono">07</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/07-beg.jpg" alt="自己紹介READMEをGitHubに初公開"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">初級</span><span class="feat-tag">GitHub</span></div>
+          <h3>自己紹介READMEをGitHubに初公開</h3>
+          <p class="caption"><b>やったこと：</b>READMEを新規リポジトリにコミットしGitHubへ公開。<b>工夫点：</b>ローカルでの生成物を初めて外部に公開する形に。<b>わかったこと：</b>成果物を人に見せる形に仕上げる工程を体験できた。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry" data-level="mid" data-tags="content skill">
+      <div class="node mono">07</div>
+      <div class="entry-card">
+        <div class="shot"><div class="chrome"><i></i><i></i><i></i></div><img src="images/07-mid.jpg" alt="Skill追加後の記事執筆を再検証"></div>
+        <div class="entry-body">
+          <div class="badges"><span class="lvl-dot">中級</span><span class="feat-tag">コンテンツ生成</span></div>
+          <h3>Skill追加後の記事執筆を再検証</h3>
+          <p class="caption"><b>やったこと：</b>reader-persona/heading-analyzerを組み込んだ状態でseo-blog-writerを再実行。<b>工夫点：</b>スキル追加前後の違いを比較できるようにした。<b>わかったこと：</b>Skillを増やすほどペルソナ設定や構成の精度が上がることを確認できた。</p>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer>
+    design tokens: <a href="design-system.yaml">design-system.yaml</a> ／
+    ソース: <a href="https://github.com/tomomishimuta48/ai-dev-portfolio">GitHub</a>
+  </footer>
+
 </div>
-
-<div class="section-head" id="works">
-  <div>
-    <div class="eyebrow">Index — All Works</div>
-    <h2>実績一覧</h2>
-  </div>
-  <div class="count num" id="visibleCount">13 items</div>
-</div>
-
-<div class="filter-bar">
-  <button class="filter-btn active" data-filter="all">すべて</button>
-  <button class="filter-btn" data-filter="beginner">初級</button>
-  <button class="filter-btn" data-filter="inter">中級</button>
-</div>
-
-<section class="gallery" id="gallery"></section>
-
-<section class="about" id="about">
-  <div>
-    <div class="eyebrow">Profile</div>
-    <h2>About</h2>
-  </div>
-  <div class="about-body">
-    <p>Claude Codeを日々の業務・学習に取り入れながら、ファイル操作からサブエージェント設計、カスタムスキルの作成・改善、ブラウザ操作の自動化まで少しずつ挑戦しています。</p>
-    <p>このページはその過程の記録です。初級の基本操作から、既存の仕組みをカスタマイズして精度を高める中級の取り組みまで、一つひとつの積み重ねを可視化しています。</p>
-  </div>
-</section>
-
-<footer id="contact">
-  <span>&copy; 2026 tomomi.log</span>
-  <span>Built with Claude Code</span>
-</footer>
 
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lbClose">Close ×</button>
-  <div class="lightbox-inner">
-    <img id="lbImg" src="" alt="">
-    <div class="lightbox-cap"><span class="no num" id="lbNo"></span><span id="lbCap"></span></div>
-    <div class="lightbox-controls">
-      <button class="lightbox-nav prev" id="lbPrev">&larr; Prev</button>
-      <button class="lightbox-nav next" id="lbNext">Next &rarr;</button>
-    </div>
-  </div>
+  <button class="lightbox-close" id="lightboxClose" aria-label="閉じる">×</button>
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <script>
-const IMG_BASE = "images/";
+  const entries = Array.from(document.querySelectorAll('.entry'));
+  const levelButtons = document.querySelectorAll('#levelFilter button');
+  const tagButtons = document.querySelectorAll('#tagFilter button');
+  const resultCount = document.getElementById('resultCount');
+  let currentLevel = 'all';
+  let currentTag = 'all';
 
-const items = [
-  {
-    level:"beginner", set:"00",
-    title:"自己紹介READMEを自動生成",
-    desc:"「名前・好きなもの3つ・学びたいこと」を条件に、README.mdを箇条書きで自動生成。ファイル操作の基本を体験。",
-    tags:["ファイル生成","README"],
-    images:["00初級.png"]
-  },
-  {
-    level:"beginner", set:"01",
-    title:"利用状況ダッシュボード & カスタマイズ画面",
-    desc:"セッション数・トークン数などの利用統計を確認し、/commit スラッシュコマンドやスキル管理画面を操作。",
-    tags:["ダッシュボード","スラッシュコマンド"],
-    images:["01初級①.png","01初級②.png"]
-  },
-  {
-    level:"beginner", set:"02",
-    title:"code-reviewerサブエージェントでレビュー",
-    desc:"サンプルのPythonコードをcode-reviewerサブエージェントに渡し、重要度別に指摘事項を出力。",
-    tags:["サブエージェント","コードレビュー"],
-    images:["02初級.png"]
-  },
-  {
-    level:"inter", set:"02",
-    title:"セキュリティ重視のレビューにカスタマイズ",
-    desc:"code-reviewerの定義を編集し、OWASP Top10を意識したセキュリティ最優先のレビュー観点に強化。",
-    tags:["サブエージェント","セキュリティ"],
-    images:["02中級.png"]
-  },
-  {
-    level:"beginner", set:"03",
-    title:"char-countスキルで文字数カウント",
-    desc:"Word文書(.docx)からテキストを抽出し、改行・スペース有無別の文字数を自動集計。",
-    tags:["カスタムスキル","ドキュメント処理"],
-    images:["03初級.png"]
-  },
-  {
-    level:"inter", set:"03",
-    title:"char-countスキルの発動条件を改善",
-    desc:"具体的な利用シーンや暗黙的な呼び出しパターンを追記し、スキルの発動条件と手順を詳細化。",
-    tags:["カスタムスキル","改善"],
-    images:["03中級.png"]
-  },
-  {
-    level:"inter", set:"04",
-    title:"SEO記事執筆用スキルを新規作成",
-    desc:"reader-persona・heading-analyzerスキルを作成し、seo-blog-writerと組み合わせて5,000文字のSEO記事を自動執筆。",
-    tags:["カスタムスキル","記事生成"],
-    images:["04中級①.png","04中級②.png"]
-  },
-  {
-    level:"beginner", set:"05",
-    title:"file-summaryスキルで記事を要約",
-    desc:"技術記事のMarkdownファイルを読み込み、タイトル・トピック・結論を自動要約。",
-    tags:["カスタムスキル","要約"],
-    images:["05初級.png"]
-  },
-  {
-    level:"inter", set:"05",
-    title:"file-summaryを3ステップワークフローに拡張",
-    desc:"読み込み→要約→改善提案の3ステップ構成にカスタマイズし、要約に加えて改善提案まで自動生成。",
-    tags:["カスタムスキル","ワークフロー設計"],
-    images:["05中級①.png","05中級②.png"]
-  },
-  {
-    level:"beginner", set:"06",
-    title:"Claude in Chromeでニュース見出しを取得",
-    desc:"ニュースサイトのトップページから見出し10個をブラウザ拡張機能経由で抽出。",
-    tags:["Claude in Chrome","Web操作"],
-    images:["06初級.png"]
-  },
-  {
-    level:"inter", set:"06",
-    title:"ログイン操作 & スプレッドシート連携",
-    desc:"フォームへのログイン自動操作と、取得した見出しをGoogleスプレッドシートへ自動入力する連携を実行。",
-    tags:["Claude in Chrome","自動操作"],
-    images:["06中級①.png","06中級②.png"]
-  },
-  {
-    level:"beginner", set:"07",
-    title:"GitHubに自己紹介READMEを公開",
-    desc:"作成したREADME.mdをGitHubリポジトリにコミットし、実際に公開するところまで実施。",
-    tags:["GitHub","公開"],
-    images:["07初級.png"]
-  },
-  {
-    level:"inter", set:"07",
-    title:"HTML版ページを追加してpush",
-    desc:"README.mdに加えてindex.htmlも作成し、自己紹介のWeb版ページとして拡張・追加コミット。",
-    tags:["GitHub","HTML"],
-    images:["07中級.png"]
+  function applyFilters(){
+    let visible = 0;
+    entries.forEach(en=>{
+      const levelOk = currentLevel === 'all' || en.dataset.level === currentLevel;
+      const tags = (en.dataset.tags || '').split(' ');
+      const tagOk = currentTag === 'all' || tags.includes(currentTag);
+      const show = levelOk && tagOk;
+      en.classList.toggle('is-hidden', !show);
+      if(show) visible++;
+    });
+    resultCount.textContent = visible + ' / ' + entries.length + ' 件を表示';
   }
-];
 
-items.forEach((it, i) => { it.no = String(i + 1).padStart(2, "0"); });
-
-const gallery = document.getElementById("gallery");
-const visibleCount = document.getElementById("visibleCount");
-
-function levelLabel(l){ return l === "beginner" ? "初級" : "中級"; }
-
-function render(filter){
-  gallery.innerHTML = "";
-  const filtered = items.filter(it => filter === "all" || it.level === filter);
-  visibleCount.textContent = `${filtered.length} items`;
-  filtered.forEach((it, idx) => {
-    const card = document.createElement("div");
-    card.className = "card" + (idx % 4 === 3 ? " feature" : "");
-    card.innerHTML = `
-      <div class="thumb-wrap">
-        <img src="${IMG_BASE}${encodeURIComponent(it.images[0])}" alt="${it.title}" loading="lazy">
-        <span class="level-badge">${levelLabel(it.level)}</span>
-        ${it.images.length > 1 ? `<span class="multi-badge">1 / ${it.images.length}</span>` : ""}
-        <span class="card-no num">${it.no}</span>
-      </div>
-      <div class="card-body">
-        <h3>${it.title}</h3>
-        <p>${it.desc}</p>
-        <div class="tag-row">${it.tags.join(" ／ ")}</div>
-      </div>
-    `;
-    card.addEventListener("click", () => openLightbox(it));
-    gallery.appendChild(card);
+  levelButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      levelButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLevel = btn.dataset.f;
+      applyFilters();
+    });
   });
-}
 
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    render(btn.dataset.filter);
+  tagButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tagButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTag = btn.dataset.tag;
+      applyFilters();
+    });
   });
-});
 
-// Lightbox
-const lb = document.getElementById("lightbox");
-const lbImg = document.getElementById("lbImg");
-const lbCap = document.getElementById("lbCap");
-const lbNo = document.getElementById("lbNo");
-let currentItem = null;
-let currentIndex = 0;
+  applyFilters();
 
-function openLightbox(item){
-  currentItem = item;
-  currentIndex = 0;
-  updateLightbox();
-  lb.classList.add("open");
-}
-function updateLightbox(){
-  lbImg.src = IMG_BASE + encodeURIComponent(currentItem.images[currentIndex]);
-  lbNo.textContent = `No. ${currentItem.no}`;
-  lbCap.textContent = `${currentItem.title}（${currentIndex+1} / ${currentItem.images.length}）`;
-  const multi = currentItem.images.length > 1;
-  document.getElementById("lbPrev").classList.toggle("hide", !multi);
-  document.getElementById("lbNext").classList.toggle("hide", !multi);
-}
-document.getElementById("lbClose").addEventListener("click", () => lb.classList.remove("open"));
-lb.addEventListener("click", (e) => { if(e.target === lb) lb.classList.remove("open"); });
-document.getElementById("lbPrev").addEventListener("click", () => {
-  currentIndex = (currentIndex - 1 + currentItem.images.length) % currentItem.images.length;
-  updateLightbox();
-});
-document.getElementById("lbNext").addEventListener("click", () => {
-  currentIndex = (currentIndex + 1) % currentItem.images.length;
-  updateLightbox();
-});
-document.addEventListener("keydown", (e) => {
-  if(!lb.classList.contains("open")) return;
-  if(e.key === "Escape") lb.classList.remove("open");
-  if(e.key === "ArrowLeft") document.getElementById("lbPrev").click();
-  if(e.key === "ArrowRight") document.getElementById("lbNext").click();
-});
-
-render("all");
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  document.querySelectorAll('.shot img').forEach(img=>{
+    img.addEventListener('click', ()=>{
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightbox.classList.add('open');
+    });
+  });
+  function closeLightbox(){ lightbox.classList.remove('open'); lightboxImg.src=''; }
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
 </script>
 
 </body>
