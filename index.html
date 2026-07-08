@@ -29,28 +29,28 @@
     </div>
     <div class="track"><i class="b"></i><i class="m"></i></div>
     <div class="taglist" id="tagFilter">
-      <button class="active" data-tag="all">すべてのタグ</button>
-      <button data-tag="readme">README生成</button>
-      <button data-tag="env">環境理解</button>
-      <button data-tag="subagent">SubAgent</button>
-      <button data-tag="skill">Skill</button>
-      <button data-tag="workflow">ワークフロー設計</button>
-      <button data-tag="content">コンテンツ生成</button>
-      <button data-tag="browser">ブラウザ操作</button>
-      <button data-tag="integration">外部連携</button>
-      <button data-tag="github">GitHub</button>
+      <button class="active" aria-pressed="true" data-tag="all">すべてのタグ</button>
+      <button aria-pressed="false" data-tag="readme">README生成</button>
+      <button aria-pressed="false" data-tag="env">環境理解</button>
+      <button aria-pressed="false" data-tag="subagent">SubAgent</button>
+      <button aria-pressed="false" data-tag="skill">Skill</button>
+      <button aria-pressed="false" data-tag="workflow">ワークフロー設計</button>
+      <button aria-pressed="false" data-tag="content">コンテンツ生成</button>
+      <button aria-pressed="false" data-tag="browser">ブラウザ操作</button>
+      <button aria-pressed="false" data-tag="integration">外部連携</button>
+      <button aria-pressed="false" data-tag="github">GitHub</button>
     </div>
   </section>
 
   <div class="section-head">
     <h2>Timeline</h2>
     <div class="toggle" id="levelFilter">
-      <button class="active" data-f="all">すべて</button>
-      <button data-f="beg">初級</button>
-      <button data-f="mid">中級</button>
+      <button class="active" aria-pressed="true" data-f="all">すべて</button>
+      <button aria-pressed="false" data-f="beg">初級</button>
+      <button aria-pressed="false" data-f="mid">中級</button>
     </div>
   </div>
-  <div class="result-count" id="resultCount"></div>
+  <div class="result-count" id="resultCount" aria-live="polite"></div>
 
   <section class="timeline" id="timeline">
 
@@ -295,8 +295,9 @@
 
   levelButtons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      levelButtons.forEach(b=>b.classList.remove('active'));
+      levelButtons.forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
       currentLevel = btn.dataset.f;
       applyFilters();
     });
@@ -304,8 +305,9 @@
 
   tagButtons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      tagButtons.forEach(b=>b.classList.remove('active'));
+      tagButtons.forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
       currentTag = btn.dataset.tag;
       applyFilters();
     });
@@ -315,17 +317,39 @@
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
-  document.querySelectorAll('.shot img').forEach(img=>{
-    img.addEventListener('click', ()=>{
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      lightbox.classList.add('open');
+  const lightboxClose = document.getElementById('lightboxClose');
+  let lastTrigger = null;
+
+  function openLightbox(img, trigger){
+    lastTrigger = trigger;
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('open');
+    lightboxClose.focus();
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightboxImg.src = '';
+    if(lastTrigger){ lastTrigger.focus(); lastTrigger = null; }
+  }
+
+  document.querySelectorAll('.shot').forEach(shot=>{
+    const img = shot.querySelector('img');
+    shot.tabIndex = 0;
+    shot.setAttribute('role', 'button');
+    shot.setAttribute('aria-label', img.alt + ' を拡大表示');
+    shot.addEventListener('click', ()=> openLightbox(img, shot));
+    shot.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openLightbox(img, shot);
+      }
     });
   });
-  function closeLightbox(){ lightbox.classList.remove('open'); lightboxImg.src=''; }
-  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+
+  lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox(); });
 </script>
 
 </body>

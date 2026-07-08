@@ -121,7 +121,7 @@ h1{
 .entry:last-child{margin-bottom:0;}
 .entry.is-hidden{display:none;}
 .node{
-  position:absolute;left:0;top:2px;width:47px;height:47px;border-radius:50%;
+  position:absolute;left:0;top:2px;width:47px;height:47px;border-radius:8px;
   background:var(--surface);border:1px solid var(--hairline);
   display:flex;align-items:center;justify-content:center;
   font-size:.85rem;font-weight:600;z-index:1;
@@ -136,6 +136,7 @@ h1{
 @media (max-width:640px){ .entry-card{grid-template-columns:1fr;} }
 
 .shot{position:relative;background:#0d0e11;cursor:zoom-in;}
+.shot:focus-visible{outline:2px solid var(--accent-cool);outline-offset:-2px;}
 .shot .chrome{display:flex;gap:5px;padding:8px 10px;background:#1c1d20;}
 .shot .chrome i{width:8px;height:8px;border-radius:50%;background:#3a3b3f;}
 .shot img{display:block;width:100%;height:150px;object-fit:cover;object-position:top;}
@@ -156,11 +157,14 @@ h1{
   display:none;align-items:center;justify-content:center;z-index:100;padding:40px;
 }
 .lightbox.open{display:flex;}
-.lightbox img{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.lightbox img{max-width:100%;max-height:100%;border-radius:6px;border:1px solid rgba(255,255,255,.14);}
 .lightbox-close{
-  position:absolute;top:24px;right:28px;width:38px;height:38px;border-radius:50%;
+  position:absolute;top:24px;right:28px;width:38px;height:38px;border-radius:8px;
   border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;
   font-size:1.1rem;cursor:pointer;
+}
+.lightbox-close:focus-visible,.taglist button:focus-visible,.toggle button:focus-visible{
+  outline:2px solid var(--accent-cool);outline-offset:2px;
 }
 
 /* ---------- Footer ---------- */
